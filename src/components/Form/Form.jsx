@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, getContactsState } from '../redux/contactsSlice';
+import { addContact, getContactsState } from '../redux/contacts/contactsSlice';
 import css from 'components/Form/Form.module.css';
 
 export default function Form() {

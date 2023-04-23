@@ -5,7 +5,7 @@ import {
   deleteContact,
   getContactsState,
   getFilterState,
-} from '../redux/contactsSlice';
+} from '../redux/contacts/contactsSlice';
 
 export default function Contacts() {
   const contacts = useSelector(getContactsState);
@@ -20,7 +20,11 @@ export default function Contacts() {
         }
         return (
           <li key={e.id} data-key={e.id} className={css.item}>
-            {e.name} : {e.number}{' '}
+            <span>
+              {' '}
+              {e.name} : {e.number}{' '}
+            </span>
+
             <button
               className={css.btn}
               onClick={() => {

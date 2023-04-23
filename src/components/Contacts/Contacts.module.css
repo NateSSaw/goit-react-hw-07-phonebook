@@ -1,15 +1,18 @@
 .list {
-    margin-top: 10px;
+  list-style: square;
 }
 
 .item {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 13px;
     text-transform: capitalize;
-    font-size: 20px;
+    font-size: 16px;
+    font-style: italic;
+    border-bottom: 1px solid blue;
 }
 
-.item:not(:last-child) {
-    margin-bottom: 13px;
-}
+
 
 .btn {
     font-size: 14px;

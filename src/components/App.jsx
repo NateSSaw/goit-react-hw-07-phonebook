@@ -4,7 +4,7 @@ import Filter from 'components/Filter/Filter';
 
 export default function App() {
   return (
-    <div>
+    <div className="container">
       <h1>Phonebook</h1>
       <Form />
 
