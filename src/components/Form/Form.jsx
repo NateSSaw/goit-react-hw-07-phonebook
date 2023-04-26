@@ -1,29 +1,54 @@
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact, getContactsState } from '../redux/contacts/contactsSlice';
+import { useState } from 'react';
+import {
+  useAddContactMutation,
+  useGetContactsQuery,
+} from '../redux/contacts/contactsSlice';
 import css from 'components/Form/Form.module.css';
 
 export default function Form() {
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContactsState);
+  const [addContact] = useAddContactMutation();
+  const { data: contacts } = useGetContactsQuery();
+  // const { data, error, isLoading } = useGetContactsQuery();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const onSubmit = evt => {
-    evt.preventDefault();
-    const form = evt.target;
-    const name = form.elements.name.value;
-    const number = form.elements.number.value;
-    if (checkIfExist(name))
-      return alert('This contact is exist in your phonebook!');
-    dispatch(addContact({ name, number }));
-    form.reset();
+  const onChange = ({ target }) => {
+    switch (target.name) {
+      case 'name':
+        setName(target.value);
+        break;
+      case 'number':
+        setPhone(target.value);
+        break;
+      default:
+        break;
+    }
   };
 
-  const checkIfExist = name => {
-    return contacts.find(contact =>
-      contact.name.toLowerCase().includes(name.toLowerCase())
-    );
+  const resetForm = () => {
+    setName('');
+    setPhone('');
   };
 
+  const onSubmit = e => {
+    e.preventDefault();
+
+    if (contacts?.find(contact => contact.name === name)) {
+      alert(`${name} is already in contacts.`);
+      return;
+    } else if (contacts?.find(contact => contact.name === '')) {
+      alert('Enter name');
+      return;
+    }
+    handleAddContact({ name, phone });
+    resetForm();
+  };
+
+  const handleAddContact = async contact => {
+    try {
+      await addContact(contact);
+    } catch (error) {}
+  };
   return (
     <form onSubmit={onSubmit}>
       <label className={css.label}>
@@ -36,6 +61,8 @@ export default function Form() {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
+          value={name}
+          onChange={onChange}
         />
       </label>
       <label className={css.label}>
@@ -48,6 +75,8 @@ export default function Form() {
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
+          value={phone}
+          onChange={onChange}
         />
       </label>
       <button type="submit" className={css.btn}>
@@ -56,13 +85,3 @@ export default function Form() {
     </form>
   );
 }
-
-Form.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ),
-};

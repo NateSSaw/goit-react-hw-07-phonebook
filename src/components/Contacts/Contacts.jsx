@@ -1,35 +1,33 @@
-import PropTypes from 'prop-types';
 import css from 'components/Contacts/Contacts.module.css';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
-  deleteContact,
-  getContactsState,
-  getFilterState,
-} from '../redux/contacts/contactsSlice';
+  useDeleteContactMutation,
+  useGetContactsQuery,
+} from 'components/redux/contacts/contactsSlice';
+export function Contacts() {
+  const { data } = useGetContactsQuery();
+  // const { data, error, isLoading } = useGetContactsQuery();
 
-export default function Contacts() {
-  const contacts = useSelector(getContactsState);
-  const filter = useSelector(getFilterState);
-  const dispatch = useDispatch();
+  const [deleteContact, { isLoadingDelete }] = useDeleteContactMutation();
+  const filterValue = useSelector(state => state.filter);
 
   return (
     <ul className={css.list}>
-      {contacts.map(e => {
-        if (!e.name.toLowerCase().includes(filter.toLowerCase())) {
+      {data?.map(e => {
+        if (!e.name.toLowerCase().includes(filterValue.toLowerCase())) {
           return null;
         }
         return (
           <li key={e.id} data-key={e.id} className={css.item}>
-            <span>
-              {' '}
-              {e.name} : {e.number}{' '}
-            </span>
+            <span className={css.name}>{e.name} :</span>
+            <span>{e.phone}</span>
 
             <button
               className={css.btn}
               onClick={() => {
-                dispatch(deleteContact(e.id));
+                deleteContact(e.id);
               }}
+              disabled={isLoadingDelete}
             >
               Delete
             </button>
@@ -39,13 +37,3 @@ export default function Contacts() {
     </ul>
   );
 }
-
-Contacts.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-    })
-  ),
-};
